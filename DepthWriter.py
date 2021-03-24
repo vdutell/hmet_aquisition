@@ -1,8 +1,9 @@
 import numpy as np
 import os
 from video_capture.realsense2_backend import Realsense2_Source
+import cv2
 
-class NumpyWriter():
+class DepthWriter():
 
     def __init__(self, base_dir):
         self.base_dir = base_dir
@@ -18,9 +19,13 @@ class NumpyWriter():
         # .timestamp
         with open(self.ts_filename, 'a+') as ts_file:
             ts_file.write(str(depth_frame.timestamp) + "\n")
-
-        filename = os.path.join(self.base_dir, f"depth_frame_{self.frame_num}.npy")
-        np.save(filename, np.array(depth_frame.depth))
+        #for Numpy
+        #filename = os.path.join(self.base_dir, f"depth_frame_{str(self.frame_num).zfill(8)}.npy")
+        #np.save(filename, np.array(depth_frame.depth))
+        #for PNG
+        filename = os.path.join(self.base_dir, f"depth_frame_{str(self.frame_num).zfill(8)}.png")
+        cv2.imwrite(filename, np.asanyarray(depth_frame.depth))
+        #cv2.imwrite(filename, np.array(depth_frame.depth))
 
         self.frame_num += 1
 
@@ -40,7 +45,7 @@ def start_depth_recording(self, rec_loc, start_time_synced):
         return
 
     video_path = os.path.join(rec_loc, "depth")
-    self.depth_video_writer = NumpyWriter(video_path)
+    self.depth_video_writer = DepthWriter(video_path)
 
 Realsense2_Source.start_depth_recording = start_depth_recording
 
