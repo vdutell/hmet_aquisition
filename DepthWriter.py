@@ -10,6 +10,7 @@ class DepthWriter():
         self.frame_num = 0
         os.makedirs(base_dir)
         self.ts_filename = os.path.join(base_dir, "timestamps.csv")
+        self.ts_file = open(self.ts_filename, 'a+')
 
     def write_video_frame(self, depth_frame):
         """
@@ -17,14 +18,15 @@ class DepthWriter():
         """
         # frame has .depth for raw numpy data
         # .timestamp
-        with open(self.ts_filename, 'a+') as ts_file:
-            ts_file.write(str(depth_frame.timestamp) + "\n")
-        #for Numpy
-        #filename = os.path.join(self.base_dir, f"depth_frame_{str(self.frame_num).zfill(8)}.npy")
-        #np.save(filename, np.array(depth_frame.depth))
+        self.ts_file.write(str(depth_frame.timestamp) + "\n")
+        #frame id
+        frame_id = str(self.frame_num).zfill(8)
+        # #for Numpy
+        filename = os.path.join(self.base_dir, f"depth_frame_{frame_id}.npy")
+        np.save(filename, np.array(depth_frame.depth))
         #for PNG
-        filename = os.path.join(self.base_dir, f"depth_frame_{str(self.frame_num).zfill(8)}.png")
-        cv2.imwrite(filename, np.asanyarray(depth_frame.depth))
+        # filename = os.path.join(self.base_dir, f"depth_frame_{frame_id}.png")
+        #cv2.imwrite(filename, np.asanyarray(depth_frame.depth))
         #cv2.imwrite(filename, np.array(depth_frame.depth))
 
         self.frame_num += 1
@@ -33,7 +35,7 @@ class DepthWriter():
         """
         This gets called when everthing is done.
         """
-        pass
+        self.ts_file.close()
 
 
 def start_depth_recording(self, rec_loc, start_time_synced):
